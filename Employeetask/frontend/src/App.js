@@ -1,37 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import EmployeeDetails from "./components/EmployeeDetails";
 import EmployeeTable from "./components/EmployeeTable";
 
 function App() {
-  const [showEmployeeTable, setShowEmployeeTable] = useState(false);
-
-  const toggleEmployeeTable = () => {
-    setShowEmployeeTable(!showEmployeeTable);
-  };
-
   return (
-    <div>
-      <button
-        onClick={toggleEmployeeTable}
-        style={{
-          position: "absolute",
-          top: "26px",
-          right: "40px",
-          zIndex: 1000,
-          padding: "10px",
-          backgroundColor: showEmployeeTable ? "#28a745" : "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          transition: "background-color 0.3s ease-in-out",
-        }}
-      >
-        {showEmployeeTable ? "Add Employee" : "View Employee"}
-      </button>
-
-      {showEmployeeTable ? <EmployeeTable /> : <EmployeeDetails />}
-    </div>
+    <BrowserRouter>
+      <div>
+        <Routes>
+          <Route path="/employee-details" element={<EmployeeDetails />} />
+          <Route path="/employee-table" element={<EmployeeTable />} />
+          <Route path="/" element={<Navigate to="/employee-details" />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

@@ -7,8 +7,9 @@ function EmployeeTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [noResultsFound, setNoResultsFound] = useState(false); 
 
-//endpoint api for view employee table request
+  //endpoint api for view employee table request
   useEffect(() => {
     axios
       .get("http://localhost:3001/getEmployees")
@@ -20,7 +21,7 @@ function EmployeeTable() {
       });
   }, []);
 
-
+  
   //handle search api
   const handleSearch = () => {
     const filteredData = employees.filter((employee) => {
@@ -31,15 +32,15 @@ function EmployeeTable() {
     });
 
     setFilteredEmployees(filteredData);
+    setNoResultsFound(filteredData.length === 0);
   };
 
-//handle reload the page api 
+  //handle reload the page api
   const handleRefresh = () => {
     window.location.reload();
   };
 
-
-  // handle to download csv file 
+  // handle to download csv file
   const handleCSVDownload = () => {
     axios
       .get("http://localhost:3001/downloadCsv", {
@@ -61,7 +62,7 @@ function EmployeeTable() {
         console.error("Error downloading CSV:", error);
       });
   };
-// handle delete the employee from the table 
+  // handle delete the employee from the table
   const handleDeleteEmployee = (employeeId) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
@@ -85,9 +86,9 @@ function EmployeeTable() {
     }
   };
 
-
-  // handle edit option to show 
+  // handle edit option to show
   const handleEditEmployee = (employee) => {
+      console.log("Edit button clicked");
     setEditingEmployee({ ...employee });
   };
 
@@ -96,14 +97,13 @@ function EmployeeTable() {
   const handleSaveEmployee = () => {
     const { formattedDob, ...employeeWithoutFormattedDob } = editingEmployee;
     updateEmployee(employeeWithoutFormattedDob);
-  };
-
-
-  //handle revert back from edit option 
-  const handleCancelEdit = () => {
     setEditingEmployee(null);
   };
 
+  //handle revert back from edit option
+  const handleCancelEdit = () => {
+    setEditingEmployee(null);
+  };
 
   // if the input field value changed the state will updated hear
   const handleInputChange = (e) => {
@@ -114,7 +114,7 @@ function EmployeeTable() {
     });
   };
 
-  //  handle update via edit option 
+  //  handle update via edit option
   const updateEmployee = (updatedEmployee) => {
     axios
       .put(
@@ -139,7 +139,7 @@ function EmployeeTable() {
         console.error("Error updating employee:", error);
       });
   };
-  
+
   return (
     <div className="container mt-2">
       <h3>Employee Table</h3>
@@ -204,6 +204,11 @@ function EmployeeTable() {
           CSV Download
         </button>
       </div>
+      {noResultsFound && (
+        <div style={{ color: "red", marginTop: "10px" }}>
+          No results found.
+        </div>
+      )}
       <div
         className="table-responsive mt-2"
         style={{
@@ -215,7 +220,7 @@ function EmployeeTable() {
       >
         <table
           className="table table-striped table-bordered table-hover"
-          style={{ fontSize: "12px" }}
+          style={{ fontSize: "12px",background: "#f2f2f2" }}
         >
           <thead>
             <tr>
@@ -307,178 +312,186 @@ function EmployeeTable() {
         </table>
       </div>
       {editingEmployee && (
-        <div className="modal edit-modal">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h4 className="modal-title">Edit Employee</h4>
+  <div className="custom-modal">
+    <div className="custom-modal-dialog">
+      <div className="custom-modal-content">
+        <div className="custom-modal-header">
+          <h4 className="custom-modal-title">Edit Employee</h4>
+        </div>
+        <div className="custom-modal-body">
+          <form>
+            <div className="field-group">
+              <div className="custom-form-group">
+                <label htmlFor="firstName" className="custom-form-label">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="firstName"
+                  name="firstName"
+                  value={editingEmployee.firstName}
+                  onChange={handleInputChange}
+                />
               </div>
-              <div className="modal-body">
-                <form>
-                  <div className="mb-3">
-                    <label htmlFor="firstName" className="form-label">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="firstName"
-                      name="firstName"
-                      value={editingEmployee.firstName}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="lastName" className="form-label">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="lastName"
-                      name="lastName"
-                      value={editingEmployee.lastName}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="gender" className="form-label">
-                      Gender
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="gender"
-                      name="gender"
-                      value={editingEmployee.gender}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="maritalStatus" className="form-label">
-                      Marital Status
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="maritalStatus"
-                      name="maritalStatus"
-                      value={editingEmployee.maritalStatus}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="phoneNumber" className="form-label">
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      value={editingEmployee.phoneNumber}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="emergencyContact" className="form-label">
-                      Emergency Contact Number
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="emergencyContact"
-                      name="emergencyContact"
-                      value={editingEmployee.emergencyContact}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label">
-                      Email ID
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="email"
-                      name="email"
-                      value={editingEmployee.email}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="addressLine1" className="form-label">
-                      Address Line 1
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="addressLine1"
-                      name="addressLine1"
-                      value={editingEmployee.addressLine1}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="addressLine2" className="form-label">
-                      Address Line 2
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="addressLine2"
-                      name="addressLine2"
-                      value={editingEmployee.addressLine2}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="addressLine3" className="form-label">
-                      Address Line 3
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="addressLine3"
-                      name="addressLine3"
-                      value={editingEmployee.addressLine3}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="postalCode" className="form-label">
-                      Postal Code
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="postalCode"
-                      name="postalCode"
-                      value={editingEmployee.postalCode}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <button
-                      onClick={handleSaveEmployee}
-                      className="btn btn-primary"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
+              <div className="custom-form-group">
+                <label htmlFor="lastName" className="custom-form-label">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="lastName"
+                  name="lastName"
+                  value={editingEmployee.lastName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="custom-form-group">
+                <label htmlFor="gender" className="custom-form-label">
+                  Gender
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="gender"
+                  name="gender"
+                  value={editingEmployee.gender}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
-          </div>
+            <div className="field-group">
+              <div className="custom-form-group">
+                <label htmlFor="maritalStatus" className="custom-form-label">
+                  Marital Status
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="maritalStatus"
+                  name="maritalStatus"
+                  value={editingEmployee.maritalStatus}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="custom-form-group">
+                <label htmlFor="phoneNumber" className="custom-form-label">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={editingEmployee.phoneNumber}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="custom-form-group">
+                <label htmlFor="emergencyContact" className="custom-form-label">
+                  Emergency Contact Number
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="emergencyContact"
+                  name="emergencyContact"
+                  value={editingEmployee.emergencyContact}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="field-group">
+              <div className="custom-form-group">
+                <label htmlFor="email" className="custom-form-label">
+                  Email ID
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="email"
+                  name="email"
+                  value={editingEmployee.email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="custom-form-group">
+                <label htmlFor="addressLine1" className="custom-form-label">
+                  Address Line 1
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="addressLine1"
+                  name="addressLine1"
+                  value={editingEmployee.addressLine1}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="custom-form-group">
+                <label htmlFor="addressLine2" className="custom-form-label">
+                  Address Line 2
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="addressLine2"
+                  name="addressLine2"
+                  value={editingEmployee.addressLine2}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="field-group">
+              <div className="custom-form-group">
+                <label htmlFor="addressLine3" className="custom-form-label">
+                  Address Line 3
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="addressLine3"
+                  name="addressLine3"
+                  value={editingEmployee.addressLine3}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="custom-form-group">
+                <label htmlFor="postalCode" className="custom-form-label">
+                  Postal Code
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-control"
+                  id="postalCode"
+                  name="postalCode"
+                  value={editingEmployee.postalCode}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="custom-form-group">
+              <button
+                onClick={handleSaveEmployee}
+                className="custom-btn custom-btn-primary"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="custom-btn custom-btn-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

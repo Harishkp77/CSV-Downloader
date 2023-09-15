@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import "../EmployeeTable.css";
+import { useNavigate } from "react-router-dom";
+
 
 function EmployeeDetails() {
+  
+  const navigate = useNavigate();
+
+  const handleViewEmployee = () => {
+    navigate("/employee-table");
+  };
   const [employeeData, setEmployeeData] = useState({
     employeeId: "",
     firstName: "",
@@ -73,7 +81,29 @@ function EmployeeDetails() {
   };
 
   return (
-    <div className="container mt-4 employee-form-container">
+    <>
+      <div>
+        <button
+          style={{
+            position: "absolute",
+            top: "25px",
+            right: "40px",
+            zIndex: 1000,
+            padding: "10px",
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease-in-out",
+          }}
+          onClick={handleViewEmployee}
+        >
+          View Employee
+        </button>
+      </div>
+    <div className="container mt-4 employee-form-container" style={ { }}>
+      
       <h2>Employee Details</h2>
 
       <form onSubmit={handleSubmit}>
@@ -304,7 +334,8 @@ function EmployeeDetails() {
       </form>
       {message && <div className="alert alert-success">{message}</div>}
     </div>
+</>
+
   );
 }
-
 export default EmployeeDetails;
