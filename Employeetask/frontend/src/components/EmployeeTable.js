@@ -135,6 +135,7 @@ function EmployeeTable() {
         setEditingEmployee(null);
         alert("Employee updated successfully.");
       })
+      .then(useEffect)
       .catch((error) => {
         console.error("Error updating employee:", error);
       });
